@@ -101,10 +101,6 @@ function EnquiryContent() {
     setIsSuccess(false);
 
     try {
-      // Direct backend API endpoint
-      const primaryApiUrl = "http://localhost:5000/api/enquiries";
-
-      // Clean Payload to prevent backend schema validation crashes
       const enquiryData = {
         name: formData.name.trim(),
         company: formData.company.trim(),
@@ -126,7 +122,7 @@ function EnquiryContent() {
 
       console.log("📤 Sending enquiry:", enquiryData);
 
-      const response = await fetch(primaryApiUrl, {
+      const response = await fetch("/api/enquiries", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -161,8 +157,6 @@ function EnquiryContent() {
         const serverErrorMessage =
           data?.message ||
           data?.error ||
-          data?.errorDetails ||
-          (typeof data === "string" ? data : null) ||
           `Server error: ${response.status}`;
 
         throw new Error(serverErrorMessage);

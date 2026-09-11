@@ -167,7 +167,7 @@ export default function ContactPage() {
                     </p>
 
                     <p className="text-sm sm:text-base font-semibold text-[#172033]">
-                      +91 98765 43210
+                      +91 9205299338
                     </p>
 
                   </div>
@@ -193,7 +193,7 @@ export default function ContactPage() {
                     </p>
 
                     <p className="text-sm sm:text-base font-semibold text-[#172033] break-all">
-                      hello@jimcollaborate.com
+                      marketing@texora.ai
                     </p>
 
                   </div>

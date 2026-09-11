@@ -7,7 +7,12 @@ import EnquiryWidget from "@/components/EnquiryWidget";
 export const metadata = {
   title: "Destination Corbett",
   description: "Your Complete Jim Corbett Experience",
+    icons: {
+    icon: "/logo/corbett-logo.jpeg",
+  },
 };
+
+
 
 export default function RootLayout({ children }) {
   return (

@@ -9,17 +9,17 @@ export default function TopBar() {
 
                 <div className="flex gap-5">
                     <a
-                        href="tel:+919876543210"
+                        href="tel:+919205299338"
                         className="hover:text-gray-300 transition"
                     >
-                        📞 +91 98765 43210
+                        📞 +91 9205299338
                     </a>
 
                     <a
-                        href="mailto:hello@corbettdestination.in"
+                        href="mailto:marketing@texora.ai"
                         className="hover:text-gray-300 transition"
                     >
-                        ✉️ hello@corbettdestination.in
+                        ✉️ marketing@texora.ai
                     </a>
                 </div>
                 <span className="italic">

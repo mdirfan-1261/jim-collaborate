@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { MapPin, Phone, Mail } from "lucide-react";
 
 export default function Footer() {
   return (
@@ -8,27 +9,27 @@ export default function Footer() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-10">
 
           {/* Brand */}
-        
-<div>
-  <div className="flex items-center gap-4">
-    <div className="w-8 h-8 shrink-0  overflow-hidden bg-white flex items-center justify-center">
-      <img
-        src="/logo/corbett-logo.jpeg"
-        alt="Destination Corbett"
-        className="w-full h-full object-cover"
-      />
-    </div>
 
-    <h2 className="text-2xl font-bold whitespace-nowrap">
-      Destination Corbett
-    </h2>
-  </div>
+          <div>
+            <div className="flex items-center gap-4">
+              <div className="w-8 h-8 shrink-0  overflow-hidden bg-white flex items-center justify-center">
+                <img
+                  src="/logo/corbett-logo.jpeg"
+                  alt="Destination Corbett"
+                  className="w-full h-full object-cover"
+                />
+              </div>
 
-  <p className="mt-5 text-white/70 leading-7 max-w-sm">
-    Your complete Jim Corbett experience partner for stays,
-    safaris, MICE, events and destination weddings.
-  </p>
-</div>
+              <h2 className="text-2xl font-bold whitespace-nowrap">
+                Destination Corbett
+              </h2>
+            </div>
+
+            <p className="mt-5 text-white/70 leading-7 max-w-sm">
+              Your complete Jim Corbett experience partner for stays,
+              safaris, MICE, events and destination weddings.
+            </p>
+          </div>
 
           {/* Explore */}
           <div>
@@ -91,8 +92,8 @@ export default function Footer() {
 
             <div className="space-y-3 text-white/70">
               <p>Destination Corbett, Uttarakhand</p>
-              <p>+91 98765 43210</p>
-              <p>hello@destinationcorbett.com</p>
+              <p>+91 9205299338</p>
+              <p>marketing@texora.ai</p>
             </div>
           </div>
 
@@ -100,6 +101,14 @@ export default function Footer() {
 
         <div className="border-t border-white/10 mt-12 pt-6 text-sm text-white/50 text-center">
           © {new Date().getFullYear()} Destination Corbett. All rights reserved.
+          {" "}•{" "}
+          Developed by{" "}
+          <a
+            href="mailto:marketing@texora.ai"
+            className="text-white/70 hover:text-[#C88A3D] transition-colors"
+          >
+            Texora.ai
+          </a>
         </div>
 
       </div>
