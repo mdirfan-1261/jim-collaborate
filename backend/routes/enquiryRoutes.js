@@ -1,72 +1,63 @@
 const express = require("express");
-const mongoose = require("mongoose");
-const Enquiry = require("../models/Enquiry");
+const fs = require("fs");
+const path = require("path");
 
 const router = express.Router();
+const DATA_DIR = path.join(__dirname, "../data");
+const ENQUIRY_FILE = path.join(DATA_DIR, "enquiries.json");
 
-router.post("/", async (req, res) => {
-  try {
-    console.log("=================================");
-    console.log("📩 ENQUIRY RECEIVED");
-    console.log("=================================");
-    console.log(req.body);
+if (!fs.existsSync(DATA_DIR)) {
+  fs.mkdirSync(DATA_DIR, { recursive: true });
+}
 
-    const { name, email, phone } = req.body;
+router.post("/", (req, res) => {
+  console.log("📩 ENQUIRY RECEIVED:", req.body);
+  const { name, email, phone } = req.body;
 
-    if (!name || !email || !phone) {
-      return res.status(400).json({
-        success: false,
-        message: "Name, email and phone are required.",
-      });
-    }
-
-    const doc = {
-      name: String(req.body.name || "").trim(),
-      company: String(req.body.company || "").trim(),
-      email: String(req.body.email || "").trim().toLowerCase(),
-      phone: String(req.body.phone || "").trim(),
-      type: String(req.body.type || "Hotel"),
-      selectedService: String(req.body.selectedService || ""),
-      checkIn: req.body.checkIn || null,
-      checkOut: req.body.checkOut || null,
-      guests: req.body.guests || null,
-      rooms: req.body.rooms || null,
-      safariDate: req.body.safariDate || null,
-      preferredTime: req.body.preferredTime || "",
-      zone: req.body.zone || "",
-      message: String(req.body.message || "").trim(),
-      createdAt: new Date(),
-      updatedAt: new Date(),
-    };
-
-    let savedResult;
-    try {
-      const enquiry = new Enquiry(doc);
-      savedResult = await enquiry.save();
-    } catch (saveErr) {
-      console.warn("⚠️ Mongoose schema save failed, direct inserting to MongoDB...", saveErr.message);
-      savedResult = await mongoose.connection.db.collection("enquiries").insertOne(doc);
-    }
-
-    console.log("=================================");
-    console.log("✅ ENQUIRY SAVED SUCCESSFULLY TO DATABASE");
-    console.log("=================================");
-
-    return res.status(201).json({
-      success: true,
-      message: "Enquiry submitted successfully!",
-      enquiry: savedResult,
-    });
-  } catch (error) {
-    console.error("=================================");
-    console.error("❌ CRITICAL ERROR:", error);
-    console.error("=================================");
-
-    return res.status(500).json({
+  if (!name || !email || !phone) {
+    return res.status(400).json({
       success: false,
-      message: `Error: ${error.message || "Failed to submit enquiry"}`,
+      message: "Name, email and phone are required.",
     });
   }
+
+  const newEnquiry = {
+    id: Date.now().toString(),
+    name,
+    company: req.body.company || "",
+    email,
+    phone,
+    type: req.body.type || "Hotel",
+    selectedService: req.body.selectedService || "",
+    checkIn: req.body.checkIn || null,
+    checkOut: req.body.checkOut || null,
+    guests: req.body.guests || null,
+    rooms: req.body.rooms || null,
+    safariDate: req.body.safariDate || null,
+    preferredTime: req.body.preferredTime || "Morning",
+    zone: req.body.zone || "",
+    message: req.body.message || "",
+    createdAt: new Date().toISOString(),
+  };
+
+  let enquiries = [];
+  if (fs.existsSync(ENQUIRY_FILE)) {
+    try {
+      enquiries = JSON.parse(fs.readFileSync(ENQUIRY_FILE, "utf-8"));
+    } catch (e) {
+      enquiries = [];
+    }
+  }
+
+  enquiries.push(newEnquiry);
+  fs.writeFileSync(ENQUIRY_FILE, JSON.stringify(enquiries, null, 2));
+
+  console.log("✅ ENQUIRY SAVED SUCCESSFULLY");
+  return res.status(201).json({
+    success: true,
+    message: "Enquiry submitted successfully!",
+    enquiry: newEnquiry,
+  });
 });
 
 module.exports = router;

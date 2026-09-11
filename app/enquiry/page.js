@@ -97,31 +97,30 @@ function EnquiryContent() {
     if (isSubmitting) return;
 
     setIsSubmitting(true);
-    setStatus("Submitting your enquiry...");
+    setStatus("Submitting...");
     setIsSuccess(false);
 
     try {
       const enquiryData = {
-        name: formData.name.trim(),
-        company: formData.company.trim(),
-        phone: formData.phone.trim(),
-        email: formData.email.trim(),
+        name: formData.name,
+        company: formData.company,
+        phone: formData.phone,
+        email: formData.email,
         type: isSafari ? "Safari" : "Hotel",
         selectedService: isSafari
           ? safariName || "Safari"
           : hotelName || "Hotel",
-        checkIn: formData.checkIn ? formData.checkIn : null,
-        checkOut: formData.checkOut ? formData.checkOut : null,
-        guests: formData.guests ? Number(formData.guests) : null,
-        rooms: formData.rooms ? Number(formData.rooms) : null,
-        safariDate: formData.safariDate ? formData.safariDate : null,
-        preferredTime: formData.preferredTime || "Morning",
-        zone: formData.zone ? formData.zone : null,
-        message: formData.message.trim(),
+        checkIn: formData.checkIn,
+        checkOut: formData.checkOut,
+        guests: formData.guests,
+        rooms: formData.rooms,
+        safariDate: formData.safariDate,
+        preferredTime: formData.preferredTime,
+        zone: formData.zone,
+        message: formData.message,
       };
 
-      console.log("📤 Sending enquiry:", enquiryData);
-
+      // Relative Fetch URL directly to Next.js API Route (No Port 5000 / No SSL Error)
       const response = await fetch("/api/enquiries", {
         method: "POST",
         headers: {
@@ -130,61 +129,44 @@ function EnquiryContent() {
         body: JSON.stringify(enquiryData),
       });
 
-      // ================= READ RESPONSE =================
+      const responseText = await response.text();
 
-      let data = {};
+      let data;
 
-      const contentType =
-        response.headers.get("content-type") || "";
-
-      if (contentType.includes("application/json")) {
-        data = await response.json();
-      } else {
-        const text = await response.text();
-        data = {
-          message: text,
-        };
+      try {
+        data = JSON.parse(responseText);
+      } catch {
+        throw new Error(
+          `Server returned ${response.status}: ${responseText}`
+        );
       }
-
-      console.log("📥 Backend response:", {
-        status: response.status,
-        data,
-      });
-
-      // ================= API ERROR =================
 
       if (!response.ok) {
-        const serverErrorMessage =
-          data?.message ||
-          data?.error ||
-          `Server error: ${response.status}`;
-
-        throw new Error(serverErrorMessage);
+        throw new Error(
+          data.message || "Failed to submit enquiry"
+        );
       }
-
-      // ================= SUCCESS =================
 
       setIsSuccess(true);
 
       setStatus(
-        data?.message ||
-          "Enquiry submitted successfully!"
+        data.message || "Enquiry submitted successfully!"
       );
+
+      setTimeout(() => {
+        setStatus("");
+      }, 3000);
 
       setFormData({
         ...initialFormData,
       });
     } catch (error) {
-      console.error(
-        "❌ Enquiry submission error:",
-        error
-      );
+      console.error("Enquiry form error:", error);
 
       setIsSuccess(false);
 
       setStatus(
-        error?.message ||
-          "Unable to submit enquiry. Please try again."
+        "Something went wrong. Please try again."
       );
     } finally {
       setIsSubmitting(false);
@@ -1079,6 +1061,8 @@ function EnquiryContent() {
                         ${
                           isSuccess
                             ? "bg-green-50 text-green-700 border border-green-200"
+                            : status === "Submitting..."
+                            ? "bg-gray-50 text-[#172033] border border-gray-200"
                             : "bg-red-50 text-red-700 border border-red-200"
                         }
                       `}

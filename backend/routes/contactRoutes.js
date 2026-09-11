@@ -1,45 +1,53 @@
 const express = require("express");
-const Contact = require("../models/Contact");
+const fs = require("fs");
+const path = require("path");
 
 const router = express.Router();
+const DATA_DIR = path.join(__dirname, "../data");
+const CONTACT_FILE = path.join(DATA_DIR, "contacts.json");
 
-/* ================= TEST ROUTE ================= */
+if (!fs.existsSync(DATA_DIR)) {
+  fs.mkdirSync(DATA_DIR, { recursive: true });
+}
 
-router.get("/", (req, res) => {
-  res.json({
-    success: true,
-    message: "Contact route is working",
-  });
-});
+router.post("/", (req, res) => {
+  console.log("📩 CONTACT RECEIVED:", req.body);
+  const { name, email, phone, message } = req.body;
 
-/* ================= POST CONTACT ================= */
-
-router.post("/", async (req, res) => {
-  try {
-    const { name, email, phone, message } = req.body;
-
-    const contact = new Contact({
-      name,
-      email,
-      phone,
-      message,
-    });
-
-    await contact.save();
-
-    res.status(201).json({
-      success: true,
-      message: "Message sent successfully",
-      contact,
-    });
-  } catch (error) {
-    console.error("Contact error:", error);
-
-    res.status(500).json({
+  if (!name || !email) {
+    return res.status(400).json({
       success: false,
-      message: "Failed to send message",
+      message: "Name and email are required.",
     });
   }
+
+  const newContact = {
+    id: Date.now().toString(),
+    name,
+    email,
+    phone: phone || "",
+    message: message || "",
+    createdAt: new Date().toISOString(),
+  };
+
+  let contacts = [];
+  if (fs.existsSync(CONTACT_FILE)) {
+    try {
+      contacts = JSON.parse(fs.readFileSync(CONTACT_FILE, "utf-8"));
+    } catch (e) {
+      contacts = [];
+    }
+  }
+
+  contacts.push(newContact);
+  fs.writeFileSync(CONTACT_FILE, JSON.stringify(contacts, null, 2));
+
+  console.log("✅ CONTACT SAVED SUCCESSFULLY");
+  return res.status(200).json({
+    success: true,
+    message: "Message sent successfully!",
+    contact: newContact,
+  });
 });
 
 module.exports = router;
