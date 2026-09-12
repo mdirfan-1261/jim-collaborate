@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
-import fs from "fs";
-import path from "path";
+import connectDB from "@/lib/mongodb";
+import Contact from "@/models/Contact";
 
 // GET method to test in browser
 export async function GET() {
@@ -23,33 +23,16 @@ export async function POST(req) {
       );
     }
 
-    const dataDir = path.join(process.cwd(), "data");
-    const contactFile = path.join(dataDir, "contacts.json");
+    // Connect to MongoDB
+    await connectDB();
 
-    if (!fs.existsSync(dataDir)) {
-      fs.mkdirSync(dataDir, { recursive: true });
-    }
-
-    let contacts = [];
-    if (fs.existsSync(contactFile)) {
-      try {
-        contacts = JSON.parse(fs.readFileSync(contactFile, "utf-8"));
-      } catch (e) {
-        contacts = [];
-      }
-    }
-
-    const newContact = {
-      id: Date.now().toString(),
+    // Save contact in MongoDB
+    const newContact = await Contact.create({
       name,
       email,
       phone: phone || "",
       message: message || "",
-      createdAt: new Date().toISOString(),
-    };
-
-    contacts.push(newContact);
-    fs.writeFileSync(contactFile, JSON.stringify(contacts, null, 2));
+    });
 
     return NextResponse.json({
       success: true,
@@ -58,8 +41,12 @@ export async function POST(req) {
     });
   } catch (error) {
     console.error("Contact API error:", error);
+
     return NextResponse.json(
-      { success: false, message: error.message || "Failed to send message" },
+      {
+        success: false,
+        message: error.message || "Failed to send message",
+      },
       { status: 500 }
     );
   }

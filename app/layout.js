@@ -8,7 +8,7 @@ export const metadata = {
   title: "Destination Corbett",
   description: "Your Complete Jim Corbett Experience",
     icons: {
-    icon: "/logo/corbett-logo.jpeg",
+    icon: "/logo/corbett-logo.jpeg"
   },
 };
 
