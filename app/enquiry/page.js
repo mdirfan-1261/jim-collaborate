@@ -121,7 +121,7 @@ function EnquiryContent() {
       };
 
       // Relative Fetch URL directly to Next.js API Route (No Port 5000 / No SSL Error)
-      const response = await fetch("/api/enquiries", {
+      const response = await fetch("/api/enquiry", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
